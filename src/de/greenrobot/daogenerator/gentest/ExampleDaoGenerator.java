@@ -19,7 +19,6 @@ import de.greenrobot.daogenerator.DaoGenerator;
 import de.greenrobot.daogenerator.Entity;
 import de.greenrobot.daogenerator.Property;
 import de.greenrobot.daogenerator.Schema;
-import de.greenrobot.daogenerator.ToMany;
 
 /**
  * Generates entities and DAOs for the example project DaoExample.
@@ -30,38 +29,81 @@ import de.greenrobot.daogenerator.ToMany;
  */
 public class ExampleDaoGenerator {
 
-    public static void main(String[] args) throws Exception {
-        Schema schema = new Schema(3, "de.greenrobot.daoexample");
+	public static void main(String[] args) throws Exception {
+		Schema schema = new Schema(3, "org.grid2osm.gisapp");
 
-        addNote(schema);
-        addCustomerOrder(schema);
+		addPoi(schema);
 
-        new DaoGenerator().generateAll(schema, "../DaoExample/src-gen");
-    }
+		new DaoGenerator().generateAll(schema, "../GisApp/src-gen");
+	}
 
-    private static void addNote(Schema schema) {
-        Entity note = schema.addEntity("Note");
-        note.addIdProperty();
-        note.addStringProperty("text").notNull();
-        note.addStringProperty("comment");
-        note.addDateProperty("date");
-    }
+	public static void addPoi(Schema schema) {
+		Entity poiEntities = schema.addEntity("PoiEntities");
+		poiEntities.addIdProperty().autoincrement();
 
-    private static void addCustomerOrder(Schema schema) {
-        Entity customer = schema.addEntity("Customer");
-        customer.addIdProperty();
-        customer.addStringProperty("name").notNull();
+		Entity poiEntity = schema.addEntity("PoiEntity");
+		poiEntity.addIdProperty().autoincrement();
+		poiEntity.addBooleanProperty("done");
 
-        Entity order = schema.addEntity("Order");
-        order.setTableName("ORDERS"); // "ORDER" is a reserved keyword
-        order.addIdProperty();
-        Property orderDate = order.addDateProperty("date").getProperty();
-        Property customerId = order.addLongProperty("customerId").notNull().getProperty();
-        order.addToOne(customer, customerId);
+		Entity locationEntities = schema.addEntity("LocationEntities");
+		locationEntities.addIdProperty().autoincrement();
 
-        ToMany customerToOrders = customer.addToMany(order, customerId);
-        customerToOrders.setName("orders");
-        customerToOrders.orderAsc(orderDate);
-    }
+		Entity locationEntity = schema.addEntity("LocationEntity");
+		locationEntity.addIdProperty().autoincrement();
+		locationEntity.addFloatProperty("accuracy");
+		locationEntity.addDoubleProperty("altitude");
+		locationEntity.addFloatProperty("bearing");
+		locationEntity.addDoubleProperty("latitude");
+		locationEntity.addDoubleProperty("longitude");
+		locationEntity.addStringProperty("provider");
+		locationEntity.addLongProperty("time");
 
+		Entity photoEntities = schema.addEntity("PhotoEntities");
+		photoEntities.addIdProperty().autoincrement();
+
+		Entity photoEntity = schema.addEntity("PhotoEntity");
+		photoEntity.addIdProperty().autoincrement();
+		photoEntity.addFloatProperty("accuracy");
+		photoEntity.addDoubleProperty("altitude");
+		photoEntity.addFloatProperty("bearing");
+		photoEntity.addDoubleProperty("latitude");
+		photoEntity.addDoubleProperty("longitude");
+		photoEntity.addStringProperty("provider");
+		photoEntity.addLongProperty("time");
+		photoEntity.addStringProperty("filePath");
+
+		Entity primitiveAttributesEntity = schema
+				.addEntity("PrimitiveAttributesEntity");
+		primitiveAttributesEntity.addIdProperty().autoincrement();
+		primitiveAttributesEntity.addBooleanProperty("accountPickerIsOpen");
+		primitiveAttributesEntity.addLongProperty("accumulatedTransferSize");
+		primitiveAttributesEntity.addBooleanProperty("gesturesEnabled");
+		primitiveAttributesEntity.addStringProperty("gMail");
+		primitiveAttributesEntity.addStringProperty("gToken");
+		primitiveAttributesEntity.addIntProperty("imageViewIndex");
+		primitiveAttributesEntity.addBooleanProperty("locationTraceEnabled");
+		primitiveAttributesEntity.addStringProperty("photoFilePath");
+		primitiveAttributesEntity.addIntProperty("progressBar");
+		primitiveAttributesEntity.addIntProperty("progressCircle");
+		primitiveAttributesEntity.addBooleanProperty("resumeSend");
+		primitiveAttributesEntity.addBooleanProperty("takeAnotherPhoto");
+		primitiveAttributesEntity.addLongProperty("totalTransferSize");
+
+		Property poiEntitiesId = poiEntity.addLongProperty("poiEntitiesId")
+				.notNull().getProperty();
+		Property locationEntitiesIdProperty = poiEntity
+				.addLongProperty("locationEntitiesId").notNull().getProperty();
+		Property photoEntitiesIdProperty = poiEntity
+				.addLongProperty("photoEntitiesId").notNull().getProperty();
+		Property locationEntitiesId = locationEntity
+				.addLongProperty("locationEntitiesId").notNull().getProperty();
+		Property photoEntitiesId = photoEntity
+				.addLongProperty("photoEntitiesId").notNull().getProperty();
+
+		poiEntities.addToMany(poiEntity, poiEntitiesId);
+		poiEntity.addToOne(locationEntities, locationEntitiesIdProperty);
+		poiEntity.addToOne(photoEntities, photoEntitiesIdProperty);
+		locationEntities.addToMany(locationEntity, locationEntitiesId);
+		photoEntities.addToMany(photoEntity, photoEntitiesId);
+	}
 }
