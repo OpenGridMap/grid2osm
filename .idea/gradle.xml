@@ -9,7 +9,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/gisApp" />
-            <option value="$PROJECT_DIR$/googleplayservices_lib" />
           </set>
         </option>
       </GradleProjectSettings>
