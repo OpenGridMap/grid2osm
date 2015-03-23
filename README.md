@@ -1,2 +1,2 @@
-GisApp_DaoGenerator
+DaoGenerator
 ===================
